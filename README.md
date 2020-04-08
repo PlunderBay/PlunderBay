@@ -1,22 +1,22 @@
 # PlunderBay
 
-##Running the project
+## Running the project
 
-###Running the server
-*Open server directory
+### Running the server
+* Open server directory
 ```cd server```
-*Install dependencies
+* Install dependencies
 ```npm install```
-*Run server
+* Run server
 ```npm run dev```
 
-###Running the client
-*Start a new terminal
-*Open client directory 
+### Running the client
+* Start a new terminal
+* Open client directory 
 ```cd client```
-*Install dependencies
+* Install dependencies
 ```npm install```
-*Run client
+* Run client
 ```npm run dev```
-*Open [The client](http://localhost:8080/) in your browser
+* Open [The client](http://localhost:8080/) in your browser
 
