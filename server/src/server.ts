@@ -53,7 +53,7 @@ app.get("/", (req: any, res: any) => {
 // whenever a user connects on port 3000 via
 // a websocket, log that a user has connected
 io.on("connection", function (socket: any) {
-  socket.emit('dikEvent', JSON.stringify(testjson));
+  socket.emit('event', JSON.stringify(testjson));
   console.log("a user connected");
   // whenever we receive a 'message' we log it out
   socket.on("message", function (message: any) {

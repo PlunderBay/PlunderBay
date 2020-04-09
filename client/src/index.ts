@@ -36,10 +36,9 @@ BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon
 
     let socket = socketIo.connect("localhost:3000");
     let world: WorldController;
-    socket.on("dikEvent", (data: string) => {
+    socket.on("event", (data: string) => {
         let worldModel: WorldModel = WorldModel.fromJSON(JSON.parse(data));
         if (world == null) {
-            console.log(worldModel);
             world = new WorldController(worldModel, "1", assets);
         } else{
             world.setState(worldModel);
