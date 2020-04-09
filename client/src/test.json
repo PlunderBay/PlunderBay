@@ -1,0 +1,38 @@
+{
+    "ships": [
+        {
+            "id": 2,
+            "x": 100.1,
+            "z":  50.2,
+            "currentRotation": 1.9548,
+            "currentSpeed": 1.0,
+            "currentTurndirectionKey": "left",	
+ 
+            "possibleTurnDirections": {
+                "left": -1,
+                "center": 0,
+                "right": 1
+                },
+            "minSpeed": 0.0,
+            "maxSpeed": 10.0,
+            "turnSpeed": 1.0
+        },
+        {
+            "id": 3,
+            "x": 120.1,
+            "z": 150.2,
+            "currentRotation": 1.9548,
+            "currentSpeed": 0.8,
+            "currentTurndirectionKey": "left",	
+ 
+            "possibleTurnDirections": {
+                "left": -1,
+                "center": 0,
+                "right": 1
+                },
+            "minspeed": 0.0,
+            "maxSpeed": 10.0,
+            "turnSpeed": 1.0
+        }
+    ]
+}
