@@ -8,11 +8,15 @@ export class ShipController {
 
     constructor(assets: BABYLON.InstantiatedEntries, state: ShipModel) {
         this.shipMesh = assets.rootNodes[0];
+        this.shipMesh.rotationQuaternion = undefined;
         this.state = state;
         this.applyStateToMesh();
     }
 
     private applyStateToMesh() {
+        console.log(this.state.x);
+        console.log(this.state.z);
+        console.log(this.state.currentRotation);
         this.shipMesh.position.x = this.state.x;
         this.shipMesh.position.z = this.state.z;
         this.shipMesh.rotation.y = this.state.currentRotation;
@@ -23,9 +27,10 @@ export class ShipController {
         // The max radial rotation value. This is equals to 360 degrees.
         const maxRadial: number = Math.PI * 2; 
         const directionMultiplier: number = this.state.possibleTurnDirections[this.state.currentTurnDirectionKey];
+        console.log(directionMultiplier);
 
         //Rotate the ship based on the ships turnspeed and turn direction.
-        this.state.currentRotation += this.state.turnSpeed * directionMultiplier; 
+        this.state.currentRotation += this.state.turnSpeed; 
 
         //The ships rotation has to be between 0 and the max radial value
         if (this.state.currentRotation > Math.PI * 2) { this.state.currentRotation -= maxRadial } 

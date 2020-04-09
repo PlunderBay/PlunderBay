@@ -7,27 +7,29 @@ import { AssetContainer } from '@babylonjs/core';
 export class WorldController {
     private assets: AssetContainer
     private state: WorldModel;
-    private shipControllers: Record<string, ShipController>;
+    private shipControllers: Map<string, ShipController> = new Map();
 
     constructor(state: WorldModel, playerId: string, assets: AssetContainer) {
         this.assets = assets;
         this.state = state;
         //do something with playerid
-        for (let key in this.state.ships) {
-            this.shipControllers[key] = new ShipController(this.assets.instantiateModelsToScene(), this.state.ships[key]);
-        }
+
+        this.state.ships.forEach((value: ShipModel, key: string) => {
+            this.shipControllers.set(key, new ShipController(this.assets.instantiateModelsToScene(), value));
+        });
+        
     }
 
     public setState(newState: WorldModel): void {
-        for (let key in newState.ships) {
-            if (this.shipControllers[key] != null) { this.shipControllers[key].setState(newState.ships[key]); }
-            else { this.shipControllers[key] = new ShipController(this.assets.instantiateModelsToScene(), newState.ships[key]); }
-        }
+        newState.ships.forEach((value: ShipModel, key: string) => {
+            if (this.shipControllers.has(key)) { this.shipControllers[key].setState(value); }
+            else { this.shipControllers.set(key, new ShipController(this.assets.instantiateModelsToScene(), value)); }
+        });
     }
 
     public tick(): void {
-        for(let key in this.shipControllers){
-            this.shipControllers[key].tick();
-        }
+        this.shipControllers.forEach((value: ShipController, key: string) => {
+            value.tick();
+        });
     }
 }

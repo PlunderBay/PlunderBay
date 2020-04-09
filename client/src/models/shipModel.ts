@@ -5,7 +5,7 @@ export class ShipModel {
     currentSpeed: number;
     currentTurnDirectionKey: string;
 
-    possibleTurnDirections: Record<string, number>;
+    possibleTurnDirections: Map<string, number>;
     minSpeed: number;
     maxSpeed: number;
     turnSpeed: number;
