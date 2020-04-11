@@ -1,4 +1,5 @@
-export class ShipModel {
+export class ShipState {
+    lastProcessedInput: number;
     x: number;
     z: number;
     currentRotation: number;

@@ -1,35 +1,43 @@
-import { ShipController } from './shipController';
+import * as BABYLON from '@babylonjs/core';
 
-import { ShipModel } from '../models/shipModel';
-import { WorldModel } from '../models/worldModel';
-import { AssetContainer } from '@babylonjs/core';
+import * as globalState from '../globals/globalState'
+
+import { ShipState } from '../models/shipState';
+import { WorldState } from '../models/worldState';
+
+import { ShipController } from './shipController';
+import { PlayerShipController } from './playerShipController';
 
 export class WorldController {
-    private assets: AssetContainer
-    private state: WorldModel;
+    private assets: BABYLON.AssetContainer
+    private state: WorldState;
     private shipControllers: Map<string, ShipController> = new Map();
 
-    constructor(state: WorldModel, playerId: string, assets: AssetContainer) {
+    constructor(state: WorldState, assets: BABYLON.AssetContainer, camera: BABYLON.FreeCamera) {
         this.assets = assets;
         this.state = state;
-        //do something with playerid
 
-        this.state.ships.forEach((value: ShipModel, key: string) => {
-            this.shipControllers.set(key, new ShipController(this.assets.instantiateModelsToScene(), value));
+        this.state.ships.forEach((value: ShipState, key: string) => {
+            if (key != globalState.playerId) {
+                this.shipControllers.set(key, new ShipController(this.assets.instantiateModelsToScene(), value));
+            } else {
+                this.shipControllers.set(key, new PlayerShipController(this.assets.instantiateModelsToScene(), value, camera));
+            }
         });
-        
+
     }
 
-    public setState(newState: WorldModel): void {
-        newState.ships.forEach((value: ShipModel, key: string) => {
+    public setState(newState: WorldState): void { //implement interpolation
+        newState.ships.forEach((value: ShipState, key: string) => {
+            if (key == globalState.playerId) { globalState.setLastProcessedRequestNumber(value.lastProcessedInput); }
             if (this.shipControllers.has(key)) { this.shipControllers[key].setState(value); }
             else { this.shipControllers.set(key, new ShipController(this.assets.instantiateModelsToScene(), value)); }
         });
     }
 
-    public tick(): void {
+    public tick(deltaTime: number): void {
         this.shipControllers.forEach((value: ShipController, key: string) => {
-            value.tick();
+            value.tick(deltaTime);
         });
     }
 }

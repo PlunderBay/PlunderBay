@@ -5,8 +5,9 @@ import "@babylonjs/loaders";
 import "@babylonjs/core/Meshes/meshBuilder";
 
 import * as socketIo from 'socket.io-client';
-import { WorldModel } from "./models/worldModel";
+import { WorldState } from "./models/worldState";
 import { WorldController } from "./controllers/worldController";
+import * as globalState from "./globals/globalState"
 
 const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 const engine = new BABYLON.Engine(canvas);
@@ -15,7 +16,6 @@ let light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 10, 0)
 light.intensity = 0.4;
 let material = new BABYLON.StandardMaterial("water", scene);
 material.emissiveColor = new BABYLON.Color3(0, 0, 1);
-
 
 BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon animation test).gltf", scene, (assets) => {
 
@@ -36,11 +36,16 @@ BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon
 
     let socket = socketIo.connect("localhost:3000");
     let world: WorldController;
-    socket.on("event", (data: string) => {
-        let worldModel: WorldModel = WorldModel.fromJSON(JSON.parse(data));
+    let playerId: string;
+    socket.on("playerIdSet", (data: string) => {
+        globalState.setPlayerId(data);
+    });
+
+    socket.on("worldStateUpdate", (data: string) => {
+        let worldModel: WorldState = WorldState.fromJSON(data);
         if (world == null) {
-            world = new WorldController(worldModel, "1", assets);
-        } else{
+            world = new WorldController(worldModel, assets, camera);
+        } else {
             world.setState(worldModel);
         }
     });
@@ -49,7 +54,8 @@ BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon
         if (world != null) {
             //update world
             let deltaTime = engine.getDeltaTime();
-            world.tick();
+            world.tick(deltaTime);
+            socket.emit("state", globalState.currentPlayerShipJSON);
         }
     });
 
@@ -61,5 +67,9 @@ BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon
         engine.resize();
         canvas.style.width = "100%";
         canvas.style.height = "100%";
+    });
+
+    window.addEventListener("mousemove", function (event) {
+        globalState.setCurrentPointerScenePostion(scene.pick(scene.pointerX, scene.pointerY).pickedPoint);
     });
 });

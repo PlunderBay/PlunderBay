@@ -54,7 +54,7 @@ app.get("/", (req: any, res: any) => {
 // a websocket, log that a user has connected
 io.on("connection", function (socket: any) {
   socket.emit('event', JSON.stringify(testjson));
-  console.log("a user connected");
+  console.log(socket.id);
   // whenever we receive a 'message' we log it out
   socket.on("message", function (message: any) {
     console.log(message);
