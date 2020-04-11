@@ -12,18 +12,27 @@ const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 const engine = new BABYLON.Engine(canvas);
 let scene = new BABYLON.Scene(engine);
 
-scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
-// scene.fogColor = new BABYLON.Color3(0.9, 0.9, 0.85);
-// scene.fogDensity = 0.01;
-scene.fogStart = 50.0;
-scene.fogEnd = 165.0;
-scene.fogColor = new BABYLON.Color3(0.93, 0.93, 0.84);
+// scene.fogMode = BABYLON.Scene.FOGMODE_LINEAR;
+// // scene.fogColor = new BABYLON.Color3(0.9, 0.9, 0.85);
+// // scene.fogDensity = 0.01;
+// scene.fogStart = 50.0;
+// scene.fogEnd = 165.0;
+// scene.fogColor = new BABYLON.Color3(0.93, 0.93, 0.84);
 
 
 let light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 10, 0), scene);
 light.intensity = 0.4;
 let material = new BABYLON.StandardMaterial("water", scene);
 material.emissiveColor = new BABYLON.Color3(0, 0, 1);
+
+//fog shader
+let shaderMaterial = new BABYLON.ShaderMaterial("shader", scene, "./COMMON_NAME",
+    {
+        attributes: ["position", "normal", "uv"],
+        uniforms: ["world", "worldView", "worldViewProjection", "view", "projection"]
+});
+var mainTexture = new BABYLON.Texture("ground.png", scene);
+shaderMaterial.setTexture("textureSampler", mainTexture);
 
 
 BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon animation test).gltf", scene, (assets) => {
@@ -40,17 +49,8 @@ BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon
     camera.orthoTop = camera.orthoRight * aspect;
     camera.setTarget(new BABYLON.Vector3(0, 0, 0));
 
-    var material1 = new BABYLON.StandardMaterial("mat1", scene);
-    material1.diffuseColor = new BABYLON.Color3(1, 1, 0);
-
-    for (var i = 0; i < 10; i++) {
-        var box = BABYLON.Mesh.CreateBox("Box", 1.0, scene);
-        box.material = material1;
-        box.position = new BABYLON.Vector3(-i * 5, 3, 0);
-    }
-
     var ground = BABYLON.Mesh.CreateGround("ground1", 60, 60, 2, scene);
-    ground.material = material;
+    ground.material = shaderMaterial;
 
     let socket = socketIo.connect("localhost:3000");
     let world: WorldController;
