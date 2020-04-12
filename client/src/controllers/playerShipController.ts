@@ -8,7 +8,7 @@ import * as globalState from "../globals/globalState"
 
 export class PlayerShipController extends ShipController {
     private camera: BABYLON.FreeCamera;
-    private pendingInputs: Map<number, ShipInput>;
+    private pendingInputs: Map<number, ShipInput> = new Map();
 
     constructor(assets: BABYLON.InstantiatedEntries, state: ShipState, camera: BABYLON.FreeCamera) {
         super(assets, state);
@@ -16,23 +16,22 @@ export class PlayerShipController extends ShipController {
     }
 
     public tick(deltaTime: number): void {
-        //calculate and set new turn direction based on globalinputstate
-        let direction = globalState.currentPointerScenePostion.subtract(this.shipMesh.position);
+        if (globalState.currentPointerScenePostion != null) {
+            //calculate and set new turn direction based on globalinputstate
+            let direction = globalState.currentPointerScenePostion.subtract(this.shipMesh.position);
 
-        let v1 = new BABYLON.Vector3(0, 0, 1);
-        let v2 = direction.normalize();
-
-        // calculate the angle for the new direction
-        let angle = Math.acos(BABYLON.Vector3.Dot(v1, v2));
-        let currentRotation = this.state.currentRotation;
-
-        if (angle == currentRotation) {
-            this.state.currentTurnDirectionKey = "center";
-        } else {
-            if (Math.abs(currentRotation - angle) < Math.abs((Math.PI * 2) - currentRotation + angle)) {
-                this.state.currentTurnDirectionKey = "left";
+            let newAngle = Math.atan2(-direction.x, -direction.z);
+            newAngle += Math.PI;
+            let currentRotation = this.state.currentRotation;
+            
+            if (Math.abs(newAngle - currentRotation) < this.state.turnSpeed) {
+                this.state.currentTurnDirectionKey = "center";
+                this.state.currentRotation = newAngle;
             } else {
-                this.state.currentTurnDirectionKey = "right";
+                let diff = newAngle - currentRotation;
+                if (diff < 0) { diff += (Math.PI * 2) }
+                if (diff > Math.PI) { this.state.currentTurnDirectionKey = "left"; }
+                else { this.state.currentTurnDirectionKey = "right"; }
             }
         }
 

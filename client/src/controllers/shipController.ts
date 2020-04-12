@@ -28,8 +28,8 @@ export class ShipController { //implement interpolation
 
         const maxRadial: number = Math.PI * 2;
         //The ships rotation has to be between 0 and the max radial value
-        if (this.state.currentRotation > Math.PI * 2) { this.state.currentRotation -= maxRadial }
-        if (this.state.currentRotation < 0) { this.state.currentRotation += maxRadial }
+        if (this.state.currentRotation > maxRadial) { this.state.currentRotation = 0 }
+        if (this.state.currentRotation < 0) { this.state.currentRotation = maxRadial }
     }
 
     //This function predicts the new state by continuing to turn and move in the current direction.
@@ -44,6 +44,9 @@ export class ShipController { //implement interpolation
         //Math to move the ship in the right direction with its current speed.
         input.xMovement = (((this.state.currentSpeed * Math.sin(this.state.currentRotation)) / (1000 / 60)) * deltaTime);
         input.zMovement = (((this.state.currentSpeed * Math.cos(this.state.currentRotation)) / (1000 / 60)) * deltaTime);
+
+        console.log(input.xMovement);
+        console.log(this.state.currentSpeed);
 
         this.lastInput = input;
         this.applyInput(input);

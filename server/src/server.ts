@@ -10,7 +10,7 @@ const sloop = {
   x: 0,
   z: 0,
   currentRotation: 0,
-  currentSpeed: 0,
+  currentSpeed: 0.1,
   currentTurnDirectionKey: "center",
 
   possibleTurnDirections: {
@@ -20,8 +20,8 @@ const sloop = {
   },
   
   minSpeed: 0,
-  maxSpeed: 120,
-  turnSpeed: 60
+  maxSpeed: 0.1,
+  turnSpeed: 0.01
 }
 
 let lastId = 0;
