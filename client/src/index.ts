@@ -26,7 +26,7 @@ let material = new BABYLON.StandardMaterial("water", scene);
 material.emissiveColor = new BABYLON.Color3(0, 0, 1);
 
 //fog shader
-let shaderMaterial = new BABYLON.ShaderMaterial("shader", scene, "./COMMON_NAME",
+let shaderMaterial = new BABYLON.ShaderMaterial("shader", scene, "./Fog_Shader",
     {
         attributes: ["position", "normal", "uv"],
         uniforms: ["world", "worldView", "worldViewProjection", "view", "projection"]
