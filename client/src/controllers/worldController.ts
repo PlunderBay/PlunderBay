@@ -24,11 +24,11 @@ export class WorldController {
                 this.shipControllers.set(key, new PlayerShipController(this.assets.instantiateModelsToScene(), value, camera));
             }
         });
-
     }
 
     public setState(newState: WorldState): void { //implement interpolation
         newState.ships.forEach((value: ShipState, key: string) => {
+            console.log(this.shipControllers);
             if (key == globalState.playerId) { globalState.setLastProcessedRequestNumber(value.lastProcessedInput); }
             if (this.shipControllers.has(key)) { this.shipControllers[key].setState(value); }
             else { this.shipControllers.set(key, new ShipController(this.assets.instantiateModelsToScene(), value)); }

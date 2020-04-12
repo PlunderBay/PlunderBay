@@ -1,5 +1,3 @@
-import { PossibleTurnDirections } from "./possibleTurnDirections";
-
 export class ShipState {
     lastProcessedInput: number;
     x: number;
@@ -8,7 +6,7 @@ export class ShipState {
     currentSpeed: number;
     currentTurnDirectionKey: string;
 
-    possibleTurnDirections: PossibleTurnDirections;
+    possibleTurnDirections: object;
     minSpeed: number;
     maxSpeed: number;
     turnSpeed: number;
