@@ -45,9 +45,6 @@ export class ShipController { //implement interpolation
         input.xMovement = (((this.state.currentSpeed * Math.sin(this.state.currentRotation)) / (1000 / 60)) * deltaTime);
         input.zMovement = (((this.state.currentSpeed * Math.cos(this.state.currentRotation)) / (1000 / 60)) * deltaTime);
 
-        console.log(input.xMovement);
-        console.log(this.state.currentSpeed);
-
         this.lastInput = input;
         this.applyInput(input);
         this.applyStateToMesh();

@@ -55,7 +55,7 @@ BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon
             //update world
             let deltaTime = engine.getDeltaTime();
             world.tick(deltaTime);
-            socket.emit("state", globalState.currentPlayerShipJSON);
+            socket.emit('state', globalState.currentPlayerShipJSON);
         }
     });
 

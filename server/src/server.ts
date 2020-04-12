@@ -3,25 +3,30 @@ import * as socketio from "socket.io";
 import * as path from "path";
 import { WorldState } from "./models/worldState";
 import { ShipInput } from "./models/shipInput";
+import { ClientUpdate } from "./models/clientUpdate";
+import { ShipState } from "./models/shipState";
 
 const app = express();
-const sloop = {
-  lastProcessedInput: 0,
-  x: 0,
-  z: 0,
-  currentRotation: 0,
-  currentSpeed: 0.1,
-  currentTurnDirectionKey: "center",
 
-  possibleTurnDirections: {
-    left: -1,
-    center: 0,
-    right: 1
-  },
+function generateSloop(): ShipState{
+  return  {
+    lastProcessedInput: 0,
+    x: 0,
+    z: 0,
+    currentRotation: 0,
+    currentSpeed: 0.1,
+    currentTurnDirectionKey: "center",
   
-  minSpeed: 0,
-  maxSpeed: 0.1,
-  turnSpeed: 0.01
+    possibleTurnDirections: {
+      left: -1,
+      center: 0,
+      right: 1
+    },
+    
+    minSpeed: 0,
+    maxSpeed: 0.1,
+    turnSpeed: 0.01
+  };
 }
 
 let lastId = 0;
@@ -42,24 +47,28 @@ app.get("/", (req: any, res: any) => {
 // a websocket, log that a user has connected
 io.on("connection", function (socket: any) {
   socket.emit('playerIdSet', "" + lastId);
-  world.ships.set((lastId + ""), sloop);
+  world.ships.set((lastId + ""), generateSloop());
   lastId++
 
-  io.on("state", (data: string) => {
-    let object: any = JSON.parse(data);
-    console.log(object);
-    let updateship = world.ships.get(object["id"]);
-    updateship.lastProcessedInput = object["requestNr"];
+  socket.on('state', (message: string) => {
+    console.log(message);
+    let object: ClientUpdate = JSON.parse(message); //make state model
+    let updateship = world.ships.get(object.id);
+    updateship.lastProcessedInput = object.requestNr;
     
-    let input: ShipInput = object["input"];
+    let input: ShipInput = object.input;
     updateship.x += input.xMovement;
     updateship.z += input.zMovement;
     updateship.currentRotation += input.rotationMovement;
+    const maxRadial: number = Math.PI * 2;
+    if (updateship.currentRotation > maxRadial) { updateship.currentRotation = 0 }
+    if (updateship.currentRotation < 0) { updateship.currentRotation = maxRadial }
     console.log(updateship);
-    world.ships.set(object["id"], updateship);
+    world.ships.set(object.id, updateship);
   });
 
 });
+
 
 
 
@@ -67,4 +76,4 @@ const server = http.listen(3000, function () {
   console.log("listening on *:3000");
 });
 
-setInterval(() => { io.emit("worldStateUpdate", world.toJSON())}, 1000);
+setInterval(() => { io.emit("worldStateUpdate", world.toJSON())}, 50);

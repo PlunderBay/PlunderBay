@@ -2,6 +2,7 @@ import * as BABYLON from "@babylonjs/core";
 
 import { ShipInput } from '../models/shipInput';
 import { ShipState } from '../models/shipState';
+import { ClientUpdate } from '../models/clientUpdate';
 import { ShipController } from './shipController';
 
 import * as globalState from "../globals/globalState"
@@ -42,7 +43,8 @@ export class PlayerShipController extends ShipController {
 
         let currentRequestNr = globalState.getCurrentRequestNumber();
         this.pendingInputs.set(currentRequestNr, this.lastInput);
-        globalState.setCurrentPlayerShipJSON(JSON.stringify({ id: globalState.playerId, requestNr: currentRequestNr, ship: this.lastInput }));
+        let update: ClientUpdate = { id: globalState.playerId, requestNr: currentRequestNr, input: this.lastInput };
+        globalState.setCurrentPlayerShipJSON(JSON.stringify(update));
     }
 
     //override setstate for reconcilation
