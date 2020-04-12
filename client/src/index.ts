@@ -53,6 +53,7 @@ BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon
     scene.registerBeforeRender(() => {
         if (world != null) {
             //update world
+            globalState.setCurrentPointerScenePostion(scene.pick(scene.pointerX, scene.pointerY).pickedPoint);
             let deltaTime = engine.getDeltaTime();
             world.tick(deltaTime);
             socket.emit('state', globalState.currentPlayerShipJSON);
@@ -69,7 +70,4 @@ BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon
         canvas.style.height = "100%";
     });
 
-    window.addEventListener("mousemove", function (event) {
-        globalState.setCurrentPointerScenePostion(scene.pick(scene.pointerX, scene.pointerY).pickedPoint);
-    });
 });

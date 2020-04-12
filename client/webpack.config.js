@@ -1,8 +1,10 @@
+const path = require('path');
+
 module.exports = {
     resolve: {
         extensions: ['.ts', '.js'],
         alias: {
-            "shared": [ "../shared/*" ]
+            shared:  path.resolve(__dirname, '../shared'),
         }
     },
     module: {
