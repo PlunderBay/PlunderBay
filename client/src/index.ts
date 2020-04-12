@@ -5,7 +5,7 @@ import "@babylonjs/loaders";
 import "@babylonjs/core/Meshes/meshBuilder";
 
 import * as socketIo from 'socket.io-client';
-import { WorldState } from "./models/worldState";
+import { WorldState } from "shared/models/worldState";
 import { WorldController } from "./controllers/worldController";
 import * as globalState from "./globals/globalState"
 

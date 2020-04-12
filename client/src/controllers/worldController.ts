@@ -2,8 +2,8 @@ import * as BABYLON from '@babylonjs/core';
 
 import * as globalState from '../globals/globalState'
 
-import { ShipState } from '../models/shipState';
-import { WorldState } from '../models/worldState';
+import { ShipState } from 'shared/models/shipState';
+import { WorldState } from 'shared/models/worldState';
 
 import { ShipController } from './shipController';
 import { PlayerShipController } from './playerShipController';

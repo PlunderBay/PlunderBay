@@ -1,8 +1,8 @@
 import * as BABYLON from "@babylonjs/core";
 
-import { ShipInput } from '../models/shipInput';
-import { ShipState } from '../models/shipState';
-import { ClientUpdate } from '../models/clientUpdate';
+import { ShipInput } from 'shared/models/shipInput';
+import { ShipState } from 'shared/models/shipState';
+import { ClientUpdate } from 'shared/models/clientUpdate';
 import { ShipController } from './shipController';
 
 import * as globalState from "../globals/globalState"

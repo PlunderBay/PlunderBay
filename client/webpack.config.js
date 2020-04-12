@@ -1,6 +1,9 @@
 module.exports = {
     resolve: {
-        extensions: ['.ts', '.js']
+        extensions: ['.ts', '.js'],
+        alias: {
+            "shared": [ "../shared/*" ]
+        }
     },
     module: {
         rules: [{

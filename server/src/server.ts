@@ -1,10 +1,10 @@
 import * as express from "express";
 import * as socketio from "socket.io";
 import * as path from "path";
-import { WorldState } from "./models/worldState";
-import { ShipInput } from "./models/shipInput";
-import { ClientUpdate } from "./models/clientUpdate";
-import { ShipState } from "./models/shipState";
+import { WorldState } from "shared/models/worldState";
+import { ShipInput } from "shared/models/shipInput";
+import { ClientUpdate } from "shared/models/clientUpdate";
+import { ShipState } from "shared/models/shipState";
 
 const app = express();
 

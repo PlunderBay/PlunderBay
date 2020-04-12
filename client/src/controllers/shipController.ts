@@ -1,7 +1,7 @@
 import * as BABYLON from "@babylonjs/core";
 
-import { ShipState } from '../models/shipState';
-import { ShipInput } from "../models/shipInput";
+import { ShipState } from 'shared/models/shipState';
+import { ShipInput } from "shared/models/shipInput";
 
 export class ShipController { //implement interpolation
     protected shipMesh: BABYLON.TransformNode;
