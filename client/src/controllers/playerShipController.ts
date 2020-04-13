@@ -12,7 +12,7 @@ export class PlayerShipController extends ShipController {
     private pendingInputs: Map<number, ShipInput> = new Map();
 
     constructor(assets: BABYLON.InstantiatedEntries, state: ShipState, camera: BABYLON.FreeCamera) {
-        super(assets, state);
+        super(assets, state, false);
         this.camera = camera;
     }
 
