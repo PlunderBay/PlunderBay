@@ -2,65 +2,66 @@ import * as express from "express";
 import * as socketio from "socket.io";
 import * as path from "path";
 
-const app = express();
+import { GameRoom } from './gameRoom'
 
-const testjson = {
-  ships: [
-    [0, {
-      x: 0.1,
-      z: 0.2,
-      currentRotation: 1.9548,
-      currentSpeed: 0.1,
-      currentTurnDirectionKey: "left",
-      possibleTurnDirections: {
-        left: -1,
-        center: 0,
-        right: 1
-      },
-      minSpeed: 0.0,
-      maxSpeed: 10.0,
-      turnSpeed: 0.01
-    }],
-    [1, {
-      x: 10.1,
-      z: 10.2,
-      currentRotation: 1.9548,
-      currentSpeed: 0.1,
-      currentTurnDirectionKey: "left",
-      possibleTurnDirections: {
-        left: -1,
-        center: 0,
-        right: 1
-      },
-      minSpeed: 0.0,
-      maxSpeed: 10.0,
-      turnSpeed: 0.01
-    }]
-  ]
-};
+const app = express();
+const http = require("http").Server(app);
+const io = require("socket.io")(http);
 
 app.set("port", process.env.PORT || 3000);
+const ticks: number = 50; //Ticks per second
 
-let http = require("http").Server(app);
-// set up socket.io and bind it to our
-// http server.
-let io = require("socket.io")(http);
+const msPerTick: number = 1000 / ticks;
+let tickNr: number = 1;
+
+function genid(length?: number) {
+  if (typeof length === 'undefined') { length = 32 }
+
+  let result = '';
+  let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let charactersLength = characters.length;
+  for (let i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
 
 app.get("/", (req: any, res: any) => {
   res.sendFile(path.resolve("./index.html"));
 });
 
-// whenever a user connects on port 3000 via
-// a websocket, log that a user has connected
+let gameroom: GameRoom = new GameRoom("game1");
+
 io.on("connection", function (socket: any) {
-  socket.emit('event', JSON.stringify(testjson));
+  //Generate userId, add player to our gameroom, inform player if its ID.
+  let playerId = genid()
+  gameroom.spawnShip(playerId, socket)
+  socket.join(gameroom.getName());
+  socket.emit('playerIdSet', playerId);
+
+  // Informing parties of new player
+  socket.to(gameroom.getName()).emit('social', "A player joined the server");
   console.log("a user connected");
-  // whenever we receive a 'message' we log it out
-  socket.on("message", function (message: any) {
-    console.log(message);
-    socket.emit("message", message);
+  socket.on('state', function (data: string) {
+      gameroom.applyClientUpdate(JSON.parse(data));
   });
+
+  socket.once('disconnect', () => {
+    console.log("a user disconnected");
+    //emit some kind of event to notify clients of disconnected player
+    gameroom.removePlayer(playerId);
+
+  });
+
 });
+
+
+//Update loop
+setInterval(() => {
+  // Inform all players in the game room of all players
+  io.to(gameroom.getName()).emit('worldStateUpdate', gameroom.getWorldUpdateJSON());
+  tickNr++;
+}, msPerTick)
 
 const server = http.listen(3000, function () {
   console.log("listening on *:3000");
