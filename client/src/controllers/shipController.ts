@@ -2,17 +2,26 @@ import * as BABYLON from "@babylonjs/core";
 
 import { ShipState } from 'shared/models/shipState';
 import { ShipInput } from "shared/models/shipInput";
+import { ShipStateBuffer } from "../helpers/shipStateBuffer";
 
 export class ShipController { //implement interpolation
     protected shipMesh: BABYLON.TransformNode;
     protected state: ShipState;
     protected lastInput: ShipInput;
 
-    constructor(assets: BABYLON.InstantiatedEntries, state: ShipState) {
+    private interpolation: boolean;
+    private interpolationPositionBuffer: ShipStateBuffer;
+
+    constructor(assets: BABYLON.InstantiatedEntries, state: ShipState, interpolation: boolean = true) {
         this.shipMesh = assets.rootNodes[0];
         this.shipMesh.rotationQuaternion = undefined;
         this.state = state;
         this.applyStateToMesh();
+        this.interpolation = interpolation;
+        if (interpolation) {
+            this.interpolationPositionBuffer = new ShipStateBuffer();
+            this.interpolationPositionBuffer.addState(this.state);
+        }
     }
 
     protected applyStateToMesh() {
@@ -32,8 +41,7 @@ export class ShipController { //implement interpolation
         if (this.state.currentRotation < 0) { this.state.currentRotation = maxRadial }
     }
 
-    //This function predicts the new state by continuing to turn and move in the current direction.
-    public tick(deltaTime: number): void {
+    protected predictMovement(deltaTime: number): void {
         let input = new ShipInput();
         // The max radial rotation value. This is equals to 360 degrees.
         const directionMultiplier: number = this.state.possibleTurnDirections[this.state.currentTurnDirectionKey];
@@ -50,7 +58,22 @@ export class ShipController { //implement interpolation
         this.applyStateToMesh();
     }
 
-    public setState(state: ShipState): void { this.state = state; }
+    public tick(deltaTime: number): void {
+        if (this.interpolation) {
+            this.state = this.interpolationPositionBuffer.getCurrentState();
+            this.applyStateToMesh();
+        }
+        else {
+            this.predictMovement(deltaTime);  //This function predicts the new state by continuing to turn and move in the current direction.
+        }
+    }
 
-
+    public setState(state: ShipState): void {
+        if (this.interpolation) {
+            this.interpolationPositionBuffer.addState(state); // Add state to buffer if interpolation is on.
+        }
+        else {
+            this.state = state; // Just accept new state from server if interpolation is off.
+        }
+    }
 }

@@ -14,9 +14,7 @@ const ticks: number = 50; //Ticks per second
 const msPerTick: number = 1000 / ticks;
 let tickNr: number = 1;
 
-function genid(length?: number) {
-  if (typeof length === 'undefined') { length = 32 }
-
+function genid(length: number = 32) {
   let result = '';
   let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let charactersLength = characters.length;
@@ -61,7 +59,7 @@ setInterval(() => {
   // Inform all players in the game room of all players
   io.to(gameroom.getName()).emit('worldStateUpdate', gameroom.getWorldUpdateJSON());
   tickNr++;
-}, msPerTick)
+}, msPerTick);
 
 const server = http.listen(3000, function () {
   console.log("listening on *:3000");
