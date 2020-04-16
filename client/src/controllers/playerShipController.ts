@@ -6,14 +6,25 @@ import { ClientUpdate } from 'shared/models/clientUpdate';
 import { ShipController } from './shipController';
 
 import * as globalState from "../globals/globalState"
+import { NetworkManager } from "globals/networkManager";
 
 export class PlayerShipController extends ShipController {
     private camera: BABYLON.FreeCamera;
     private pendingInputs: Map<number, ShipInput> = new Map();
 
-    constructor(assets: BABYLON.InstantiatedEntries, state: ShipState, camera: BABYLON.FreeCamera) {
+    private playerId: string;
+    private requestNr = 0;
+
+    constructor(assets: BABYLON.InstantiatedEntries, state: ShipState, camera: BABYLON.FreeCamera, playerId: string) {
         super(assets, state, false);
         this.camera = camera;
+        this.playerId = playerId;
+    }
+
+    private sendUpdateRequest(): void{
+        let update = <ClientUpdate>{id: this.playerId, requestNr: this.requestNr, input: this.lastInput};
+        NetworkManager.instance.emitEvent('clientUpdate', JSON.stringify(update));
+        this.requestNr++
     }
 
     public tick(deltaTime: number): void {
@@ -41,10 +52,7 @@ export class PlayerShipController extends ShipController {
         //update camera position
         this.camera.position = new BABYLON.Vector3(70 + this.state.x, 70, 70 + this.state.z);
 
-        let currentRequestNr = globalState.getCurrentRequestNumber();
-        this.pendingInputs.set(currentRequestNr, this.lastInput);
-        let update: ClientUpdate = { id: globalState.playerId, requestNr: currentRequestNr, input: this.lastInput };
-        globalState.setCurrentPlayerShipJSON(JSON.stringify(update));
+        this.sendUpdateRequest();
     }
 
     //override setstate for reconcilation
@@ -59,6 +67,4 @@ export class PlayerShipController extends ShipController {
         });
         this.applyStateToMesh();
     }
-
-
 }

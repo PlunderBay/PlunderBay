@@ -39,7 +39,7 @@ export class ShipStateBuffer {
             if (newRotation > Math.PI * 2) { newRotation -= Math.PI * 2; } //Checks so rotation will be valid radial value
             else if (newRotation < 0) { newRotation += Math.PI * 2; }
 
-            return {
+            return <ShipState>{
                 lastProcessedInput: 0,
                 x: oldState.x + xInput,
                 z: oldState.z + zInput,

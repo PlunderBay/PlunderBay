@@ -1,6 +1,6 @@
 import { PossibleTurnDirections } from "./possibleTurnDirections";
 
-export class ShipState {
+export interface ShipState {
     lastProcessedInput: number;
     x: number;
     z: number;

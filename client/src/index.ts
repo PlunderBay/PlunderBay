@@ -18,20 +18,17 @@ let material = new BABYLON.StandardMaterial("water", scene);
 material.emissiveColor = new BABYLON.Color3(0, 0, 1);
 
 BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon animation test).gltf", scene, (assets) => {
-
-    //let sphere = assets.instantiateModelsToScene();
-
-    var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(70, 70, 70), scene);
+    let camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(70, 70, 70), scene);
     camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
-    var distance = 100;
-    var aspect = scene.getEngine().getRenderingCanvasClientRect().height / scene.getEngine().getRenderingCanvasClientRect().width;
+    let distance = 100;
+    let aspect = scene.getEngine().getRenderingCanvasClientRect().height / scene.getEngine().getRenderingCanvasClientRect().width;
     camera.orthoLeft = -distance / 2;
     camera.orthoRight = distance / 2;
     camera.orthoBottom = camera.orthoLeft * aspect;
     camera.orthoTop = camera.orthoRight * aspect;
     camera.setTarget(new BABYLON.Vector3(0, 0, 0));
 
-    var ground = BABYLON.Mesh.CreateGround("ground1", 60, 60, 2, scene);
+    let ground = BABYLON.Mesh.CreateGround("ground1", 60, 60, 2, scene);
     ground.material = material;
 
     let socket = socketIo.connect("localhost:3000");

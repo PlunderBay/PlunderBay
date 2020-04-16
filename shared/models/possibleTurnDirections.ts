@@ -1,4 +1,4 @@
-export class PossibleTurnDirections{
+export interface PossibleTurnDirections{
     left: number;
     right: number;
     center: number;

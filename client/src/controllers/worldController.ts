@@ -11,7 +11,7 @@ import { PlayerShipController } from './playerShipController';
 export class WorldController {
     private assets: BABYLON.AssetContainer
     private state: WorldState;
-    private shipControllers: Map<string, ShipController> = new Map();
+    private shipControllers: Map<string, ShipController>;
 
     constructor(state: WorldState, assets: BABYLON.AssetContainer, camera: BABYLON.FreeCamera) {
         this.assets = assets;
@@ -21,7 +21,7 @@ export class WorldController {
 
             if (key != globalState.playerId) {
                 this.shipControllers.set(key, new ShipController(this.assets.instantiateModelsToScene(), value));
-                
+
             } else {
 
                 this.shipControllers.set(key, new PlayerShipController(this.assets.instantiateModelsToScene(), value, camera));
@@ -30,16 +30,20 @@ export class WorldController {
     }
 
     public setState(newState: WorldState): void { //implement interpolation
-        newState.ships.forEach((value: ShipState, key: string) => {
-            if (key == globalState.playerId) { globalState.setLastProcessedRequestNumber(value.lastProcessedInput); }
-            if (this.shipControllers.has(key)) {this.shipControllers.get(key).setState(value); }
-            else { this.shipControllers.set(key, new ShipController(this.assets.instantiateModelsToScene(), value)); }
-        });
+        if (this.shipControllers) {
+            newState.ships.forEach((value: ShipState, key: string) => {
+                if (key == globalState.playerId) { globalState.setLastProcessedRequestNumber(value.lastProcessedInput); }
+                if (this.shipControllers.has(key)) { this.shipControllers.get(key).setState(value); }
+                else { this.shipControllers.set(key, new ShipController(this.assets.instantiateModelsToScene(), value)); }
+            });
+        }
     }
 
     public tick(deltaTime: number): void {
-        this.shipControllers.forEach((value: ShipController, key: string) => {
-            value.tick(deltaTime);
-        });
+        if (this.shipControllers) {
+            this.shipControllers.forEach((value: ShipController, key: string) => {
+                value.tick(deltaTime);
+            });
+        }
     }
 }

@@ -42,7 +42,7 @@ export class ShipController { //implement interpolation
     }
 
     protected predictMovement(deltaTime: number): void {
-        let input = new ShipInput();
+        let input = <ShipInput>{};
         // The max radial rotation value. This is equals to 360 degrees.
         const directionMultiplier: number = this.state.possibleTurnDirections[this.state.currentTurnDirectionKey];
 
