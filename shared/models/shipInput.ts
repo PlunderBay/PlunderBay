@@ -1,4 +1,4 @@
-export class ShipInput {
+export interface ShipInput {
     xMovement: number;
     zMovement: number;
 

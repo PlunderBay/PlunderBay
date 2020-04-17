@@ -40,19 +40,17 @@ io.on("connection", function (socket: any) {
   // Informing parties of new player
   socket.to(gameroom.getName()).emit('social', "A player joined the server");
   console.log("a user connected");
-  socket.on('state', function (data: string) {
-      gameroom.applyClientUpdate(JSON.parse(data));
+  socket.on('clientUpdate', function (data: string) {
+    gameroom.applyClientUpdate(JSON.parse(data));
   });
 
   socket.once('disconnect', () => {
     console.log("a user disconnected");
-    //emit some kind of event to notify clients of disconnected player
+    io.to(gameroom.getName()).emit('playerDisconnected', playerId);
     gameroom.removePlayer(playerId);
-
   });
 
 });
-
 
 //Update loop
 setInterval(() => {

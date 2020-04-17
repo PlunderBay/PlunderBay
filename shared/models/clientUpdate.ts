@@ -1,6 +1,6 @@
 import { ShipInput } from './shipInput'
 
-export class ClientUpdate{
+export interface ClientUpdate{
     id:string;
     requestNr: number;
     input: ShipInput;
