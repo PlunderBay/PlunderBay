@@ -15,13 +15,13 @@ const sloopModelFileName = "ship-PLACEHOLDER-v7 (canon animation test).gltf";
 const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 const engine = new BABYLON.Engine(canvas);
 let scene = new BABYLON.Scene(engine);
-let light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 10, 0), scene);
+let light = new BABYLON.HemisphericLight("mainLight", new BABYLON.Vector3(0, 10, 0), scene);
 light.intensity = 0.4;
 let material = new BABYLON.StandardMaterial("water", scene);
 material.emissiveColor = new BABYLON.Color3(0, 0, 1);
 
 BABYLON.SceneLoader.LoadAssetContainer(assetsFolderPath, sloopModelFileName, scene, (assets) => {
-    let camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(70, 70, 70), scene);
+    let camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(70, 70, 70), scene);
     camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
     let distance = 100;
     let aspect = scene.getEngine().getRenderingCanvasClientRect().height / scene.getEngine().getRenderingCanvasClientRect().width;
@@ -31,7 +31,7 @@ BABYLON.SceneLoader.LoadAssetContainer(assetsFolderPath, sloopModelFileName, sce
     camera.orthoTop = camera.orthoRight * aspect;
     camera.setTarget(new BABYLON.Vector3(0, 0, 0));
 
-    let ground = BABYLON.Mesh.CreateGround("ground1", 60, 60, 2, scene);
+    let ground = BABYLON.Mesh.CreateGround("ocean", 60, 60, 2, scene);
     ground.material = material;
     let world: WorldController;
 
@@ -58,6 +58,7 @@ BABYLON.SceneLoader.LoadAssetContainer(assetsFolderPath, sloopModelFileName, sce
 
     window.addEventListener("resize", () => {
         engine.resize();
+        //update camera
         const ratio = window.innerWidth / window.innerHeight;
         const zoom = camera.orthoTop;
         const newWidth = zoom * ratio;
