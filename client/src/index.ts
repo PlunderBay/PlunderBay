@@ -4,10 +4,13 @@ import "@babylonjs/loaders";
 // Required side effects to populate the Create methods on the mesh class. Without this, the bundle would be smaller but the createXXX methods from mesh would not be accessible.
 import "@babylonjs/core/Meshes/meshBuilder";
 
-import * as socketIo from 'socket.io-client';
 import { WorldState } from "shared/models/worldState";
 import { WorldController } from "./controllers/worldController";
 import * as globalState from "./globals/globalState"
+import { NetworkManager } from "./globals/networkManager";
+
+const assetsFolderPath = "../assets/";
+const sloopModelFileName = "ship-PLACEHOLDER-v7 (canon animation test).gltf";
 
 const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 const engine = new BABYLON.Engine(canvas);
@@ -17,7 +20,7 @@ light.intensity = 0.4;
 let material = new BABYLON.StandardMaterial("water", scene);
 material.emissiveColor = new BABYLON.Color3(0, 0, 1);
 
-BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon animation test).gltf", scene, (assets) => {
+BABYLON.SceneLoader.LoadAssetContainer(assetsFolderPath, sloopModelFileName, scene, (assets) => {
     let camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(70, 70, 70), scene);
     camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
     let distance = 100;
@@ -30,20 +33,13 @@ BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon
 
     let ground = BABYLON.Mesh.CreateGround("ground1", 60, 60, 2, scene);
     ground.material = material;
-
-    let socket = socketIo.connect("localhost:3000");
     let world: WorldController;
-    let playerId: string;
-    socket.on("playerIdSet", (data: string) => {
-        globalState.setPlayerId(data);
-    });
 
-    socket.on("worldStateUpdate", (data: string) => {
-        let worldModel: WorldState = WorldState.fromJSON(data);
+    NetworkManager.instance.addOnWorldStateUpdateCall((worldState: WorldState) => {
         if (world == null) {
-            world = new WorldController(worldModel, assets, camera);
+            world = new WorldController(worldState, assets, camera);
         } else {
-            world.setState(worldModel);
+            world.setState(worldState);
         }
     });
 
@@ -53,7 +49,6 @@ BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon
             globalState.setCurrentPointerScenePostion(scene.pick(scene.pointerX, scene.pointerY).pickedPoint);
             let deltaTime = engine.getDeltaTime();
             world.tick(deltaTime);
-            socket.emit('state', globalState.currentPlayerShipJSON);
         }
     });
 
@@ -61,10 +56,12 @@ BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon
         scene.render();
     });
 
-    window.addEventListener("resize", function () {
+    window.addEventListener("resize", () => {
         engine.resize();
-        canvas.style.width = "100%";
-        canvas.style.height = "100%";
+        const ratio = window.innerWidth / window.innerHeight;
+        const zoom = camera.orthoTop;
+        const newWidth = zoom * ratio;
+        camera.orthoLeft = -Math.abs(newWidth); camera.orthoRight = newWidth; camera.orthoBottom = -Math.abs(zoom);
     });
 
 });

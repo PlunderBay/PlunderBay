@@ -6,25 +6,25 @@ import { ClientUpdate } from 'shared/models/clientUpdate';
 import { ShipController } from './shipController';
 
 import * as globalState from "../globals/globalState"
-import { NetworkManager } from "globals/networkManager";
+import { NetworkManager } from "../globals/networkManager";
 
 export class PlayerShipController extends ShipController {
     private camera: BABYLON.FreeCamera;
     private pendingInputs: Map<number, ShipInput> = new Map();
 
     private playerId: string;
-    private requestNr = 0;
+    private requestNr = 0; //last request send by client
+
+    private sendUpdateRequestToServer(): void {
+        let update = <ClientUpdate>{ id: this.playerId, requestNr: this.requestNr, input: this.lastInput };
+        NetworkManager.instance.emitClientUpdate(update);
+        this.requestNr++
+    }
 
     constructor(assets: BABYLON.InstantiatedEntries, state: ShipState, camera: BABYLON.FreeCamera, playerId: string) {
         super(assets, state, false);
         this.camera = camera;
         this.playerId = playerId;
-    }
-
-    private sendUpdateRequest(): void{
-        let update = <ClientUpdate>{id: this.playerId, requestNr: this.requestNr, input: this.lastInput};
-        NetworkManager.instance.emitEvent('clientUpdate', JSON.stringify(update));
-        this.requestNr++
     }
 
     public tick(deltaTime: number): void {
@@ -35,7 +35,7 @@ export class PlayerShipController extends ShipController {
             let newAngle = Math.atan2(-direction.x, -direction.z);
             newAngle += Math.PI;
             let currentRotation = this.state.currentRotation;
-            
+
             if (Math.abs(newAngle - currentRotation) < this.state.turnSpeed) {
                 this.state.currentTurnDirectionKey = "center";
                 this.state.currentRotation = newAngle;
@@ -49,17 +49,16 @@ export class PlayerShipController extends ShipController {
 
         super.tick(deltaTime);
 
-        //update camera position
-        this.camera.position = new BABYLON.Vector3(70 + this.state.x, 70, 70 + this.state.z);
+        this.camera.position = new BABYLON.Vector3(70 + this.state.x, 70, 70 + this.state.z);//update camera position
 
-        this.sendUpdateRequest();
+        this.sendUpdateRequestToServer();
     }
 
     //override setstate for reconcilation
     public setState(state: ShipState): void {
         this.state = state;
         this.pendingInputs.forEach((value, key) => {
-            if (key <= globalState.lastProcessedRequestNumber) {
+            if (key <= state.lastProcessedInput) {
                 this.pendingInputs.delete(key);
             } else {
                 this.applyInput(value);

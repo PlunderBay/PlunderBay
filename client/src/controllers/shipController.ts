@@ -8,6 +8,7 @@ export class ShipController { //implement interpolation
     protected shipMesh: BABYLON.TransformNode;
     protected state: ShipState;
     protected lastInput: ShipInput;
+    protected listenerDisposers = new Array<() => void>();
 
     private interpolation: boolean;
     private interpolationPositionBuffer: ShipStateBuffer;
@@ -75,5 +76,10 @@ export class ShipController { //implement interpolation
         else {
             this.state = state; // Just accept new state from server if interpolation is off.
         }
+    }
+
+    public dispose(): void {
+        this.listenerDisposers.forEach((element) => { element(); });
+        this.shipMesh.dispose();
     }
 }

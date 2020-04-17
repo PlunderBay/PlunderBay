@@ -46,7 +46,7 @@ io.on("connection", function (socket: any) {
 
   socket.once('disconnect', () => {
     console.log("a user disconnected");
-    //emit some kind of event to notify clients of disconnected player
+    io.to(gameroom.getName()).emit('playerDisconnected', playerId);
     gameroom.removePlayer(playerId);
   });
 
