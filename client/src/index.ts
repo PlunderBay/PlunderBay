@@ -25,19 +25,39 @@ light.intensity = 0.4;
 let material = new BABYLON.StandardMaterial("water", scene);
 material.emissiveColor = new BABYLON.Color3(0, 0, 1);
 
+//test
+function setMeshTransparentFog(mesh, maxz) {
+    // vertex colors
+    var colors = [];
+    var color = [1,1,1,1];
+    var vtx = mesh.getVerticesData( BABYLON.VertexBuffer.PositionKind);
+    var i = 0;
+    while (i<vtx.length) {
+        var x = vtx[i++];
+        var y = vtx[i++];
+        var z = vtx[i++];
+        //console.log(i,":",x,y,z);
+        color[3] = 1.0 - Math.min(1, Math.max(0, z / maxz));
+        colors.push(color[0],color[1],color[2],color[3]);
+    }
+	mesh.setVerticesData( BABYLON.VertexBuffer.ColorKind, colors);
+    mesh.useVertexColors = true;
+    mesh.hasVertexAlpha = true;
+};
+
 //fog shader
-let shaderMaterial = new BABYLON.ShaderMaterial("shader", scene, "./Fog_Shader",
-    {
-        attributes: ["position", "normal", "uv"],
-        uniforms: ["world", "worldView", "worldViewProjection", "view", "projection"]
-});
-var mainTexture = new BABYLON.Texture("ground.png", scene);
-shaderMaterial.setTexture("textureSampler", mainTexture);
+// let shaderMaterial = new BABYLON.ShaderMaterial("shader", scene, "./Fog_Shader",
+//     {
+//         attributes: ["position", "normal", "uv"],
+//         uniforms: ["world", "worldView", "worldViewProjection", "view", "projection"]
+// });
+// var mainTexture = new BABYLON.Texture("ground.png", scene);
+// shaderMaterial.setTexture("textureSampler", mainTexture);
 
 
 BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon animation test).gltf", scene, (assets) => {
 
-    //let sphere = assets.instantiateModelsToScene();
+    let sphere = assets.instantiateModelsToScene();
 
     var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(70, 70, 70), scene);
     camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
@@ -49,8 +69,20 @@ BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon
     camera.orthoTop = camera.orthoRight * aspect;
     camera.setTarget(new BABYLON.Vector3(0, 0, 0));
 
+    // var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 5, -10), scene);
+
+    // // This targets the camera to scene origin
+    // camera.setTarget(BABYLON.Vector3.Zero());
+
+    // // This attaches the camera to the canvas
+    // camera.attachControl(canvas, true);
+
     var ground = BABYLON.Mesh.CreateGround("ground1", 60, 60, 2, scene);
-    ground.material = shaderMaterial;
+    ground.material = material;
+    setMeshTransparentFog(ground,50);
+
+    scene.clearColor = new BABYLON.Color4(0.02, 0.26, 0.41, 0.95);
+    //scene.clearColor = new BABYLON.Color4(0,0,0,0);
 
     let socket = socketIo.connect("localhost:3000");
     let world: WorldController;
@@ -60,6 +92,7 @@ BABYLON.SceneLoader.LoadAssetContainer("../assets/", "ship-PLACEHOLDER-v7 (canon
             world = new WorldController(worldModel, "1", assets);
         } else{
             world.setState(worldModel);
+            setMeshTransparentFog(worldModel,0.1);
         }
     });
 
