@@ -14,14 +14,15 @@ export class ShipStateBuffer {
 
     public getCurrentState(): ShipState {
         const now = new Date().getTime();
-        const renderTimeStamp = now - (1000 / 50);
+        const serverTickTime = (1000 / 20);
+        const renderTimeStamp = now - serverTickTime;
         const buffer = this.positionList;
 
         while (buffer.length > 2 && buffer[0].getTime() <= renderTimeStamp) { //Remove expired states
             buffer.shift();
         }
         
-        if (buffer.length >= 2 && buffer[0].getTime() <= renderTimeStamp && renderTimeStamp <= buffer[1].getTime()) {
+        if (buffer.length >= 2) {
             const oldState = buffer[0].getState();
             const goalState = buffer[1].getState();
 
