@@ -31,7 +31,6 @@ jobs:
         npm ci
    
     - name: Run ESLint
-      working-directory: server/src
       uses: getsentry/action-eslint-fix@v1
         
     - name: Build
