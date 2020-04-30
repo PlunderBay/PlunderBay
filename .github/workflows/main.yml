@@ -31,13 +31,13 @@ jobs:
         npm ci
    
     - name: Test
-     working-directory: server
-     run: |
+      working-directory: server
+      run: |
         npm test
         
-   - name: Build
-     working-directory: server
-     run: |
-        npm run build
+    - name: Build
+      working-directory: server
+      run: |
+         npm run build
     
    
