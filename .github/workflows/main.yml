@@ -30,9 +30,10 @@ jobs:
       run: | 
         npm ci
    
-    - name: Run ESLint
-      working-directory: server/src
+    - name: Use current action
       uses: getsentry/action-eslint-fix@v1
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         
     - name: Build
       working-directory: server
