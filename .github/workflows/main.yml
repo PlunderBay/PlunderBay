@@ -35,7 +35,7 @@ jobs:
      run: |
         npm test
         
-   - name: Test
+   - name: Build
      working-directory: server
      run: |
         npm run build
