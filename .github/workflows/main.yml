@@ -18,17 +18,20 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     
-      # Runs a single command using the runners shell
-    - name: Change directory to server
-      working-directory: ./server
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - name: checkout
       uses: actions/checkout@v2
+      
+    - name: setup Node.js
       uses: actions/setup-node@v1
       with:
         node-version: 12
-     run: npm ci
-     run: npm test
-     run: npm run build
+        
+    - name: check NodeJS
+    working-directory: ./server
+    run: npm ci
+    run: npm test
+    run: npm run build
       
   
 
