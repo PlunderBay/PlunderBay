@@ -19,8 +19,9 @@ jobs:
     steps:
     
       # Runs a single command using the runners shell
-    - name: Run a one-line script
-      run: cd server
+    - name: Change directory to server
+      working-directory: ./server
+
       
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
