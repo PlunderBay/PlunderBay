@@ -14,24 +14,24 @@ const sloopModelFileName = "ship-PLACEHOLDER-v7 (canon animation test).gltf";
 
 const canvas = document.getElementById("renderCanvas") as HTMLCanvasElement;
 const engine = new BABYLON.Engine(canvas);
-let scene = new BABYLON.Scene(engine);
-let light = new BABYLON.HemisphericLight("mainLight", new BABYLON.Vector3(0, 10, 0), scene);
+const scene = new BABYLON.Scene(engine);
+const light = new BABYLON.HemisphericLight("mainLight", new BABYLON.Vector3(0, 10, 0), scene);
 light.intensity = 0.4;
-let material = new BABYLON.StandardMaterial("water", scene);
+const material = new BABYLON.StandardMaterial("water", scene);
 material.emissiveColor = new BABYLON.Color3(0, 0, 1);
 
 BABYLON.SceneLoader.LoadAssetContainer(assetsFolderPath, sloopModelFileName, scene, (assets) => {
-    let camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(70, 70, 70), scene);
+    const camera = new BABYLON.FreeCamera("camera", new BABYLON.Vector3(70, 70, 70), scene);
     camera.mode = BABYLON.Camera.ORTHOGRAPHIC_CAMERA;
-    let distance = 100;
-    let aspect = scene.getEngine().getRenderingCanvasClientRect().height / scene.getEngine().getRenderingCanvasClientRect().width;
+    const distance = 100;
+    const aspect = scene.getEngine().getRenderingCanvasClientRect().height / scene.getEngine().getRenderingCanvasClientRect().width;
     camera.orthoLeft = -distance / 2;
     camera.orthoRight = distance / 2;
     camera.orthoBottom = camera.orthoLeft * aspect;
     camera.orthoTop = camera.orthoRight * aspect;
     camera.setTarget(new BABYLON.Vector3(0, 0, 0));
 
-    let ground = BABYLON.Mesh.CreateGround("ocean", 60, 60, 2, scene);
+    const ground = BABYLON.Mesh.CreateGround("ocean", 60, 60, 2, scene);
     ground.material = material;
     let world: WorldController;
 
@@ -47,7 +47,7 @@ BABYLON.SceneLoader.LoadAssetContainer(assetsFolderPath, sloopModelFileName, sce
         if (world != null) {
             //update world
             globalState.setCurrentPointerScenePostion(scene.pick(scene.pointerX, scene.pointerY).pickedPoint);
-            let deltaTime = engine.getDeltaTime();
+            const deltaTime = engine.getDeltaTime();
             world.tick(deltaTime);
         }
     });

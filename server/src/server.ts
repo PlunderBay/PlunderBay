@@ -1,6 +1,7 @@
 import * as express from "express";
 import * as socketio from "socket.io";
 import * as path from "path";
+import { v4 as uuidv4 } from "uuid";
 
 import { GameRoom } from './gameRoom'
 
@@ -9,20 +10,10 @@ const http = require("http").Server(app);
 const io = require("socket.io")(http);
 
 app.set("port", process.env.PORT || 3000);
-const ticks: number = 50; //Ticks per second
+const ticks: number = 20; //Ticks per second
 
 const msPerTick: number = 1000 / ticks;
 let tickNr: number = 1;
-
-function genid(length: number = 32) {
-  let result = '';
-  let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let charactersLength = characters.length;
-  for (let i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
 
 app.get("/", (req: any, res: any) => {
   res.sendFile(path.resolve("./index.html"));
@@ -31,8 +22,8 @@ app.get("/", (req: any, res: any) => {
 let gameroom: GameRoom = new GameRoom("game1");
 
 io.on("connection", function (socket: any) {
-  //Generate userId, add player to our gameroom, inform player if its ID.
-  let playerId = genid()
+  //Generate userId, add player to our gameroom, inform player of their ID.
+  let playerId = uuidv4();
   gameroom.spawnShip(playerId, socket)
   socket.join(gameroom.getName());
   socket.emit('playerIdSet', playerId);
