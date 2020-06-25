@@ -17,6 +17,7 @@ export class GameRoom {
     getName(): string {
         return this.name;
     }
+
     removePlayer(playerID: string): void {
         this.world.ships.delete(playerID);
     }
@@ -24,7 +25,7 @@ export class GameRoom {
     spawnShip(playerID: string, socket: any): void {
         this.idToSocket.set(playerID, socket);
         let playerShip = shiptypes.getSloop();
-        //ToDo: add random spawn location
+        //TODO: add random spawn location
         this.world.ships.set(playerID, playerShip);
     }
 
@@ -37,7 +38,7 @@ export class GameRoom {
         if (this.world.ships.has(update.id)) {
             let ship = this.world.ships.get(update.id);
             ship.lastProcessedInput = update.requestNr;
-            //ToDo: validate input
+            //TODO: validate input
             ship.x += update.input.xMovement;
             ship.z += update.input.zMovement;
             ship.currentRotation += update.input.rotationMovement;
