@@ -22,7 +22,7 @@ app.get("/", (req: any, res: any) => {
 let gameroom: GameRoom = new GameRoom("game1");
 
 io.on("connection", function (socket: any) {
-  //Generate userId, add player to our gameroom, inform player of their ID.
+  // Generate userId, add player to our gameroom, inform player of their ID.
   let playerId = uuidv4();
   gameroom.spawnShip(playerId, socket)
   socket.join(gameroom.getName());
