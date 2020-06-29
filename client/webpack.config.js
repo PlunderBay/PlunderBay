@@ -1,6 +1,11 @@
+const path = require('path');
+
 module.exports = {
     resolve: {
-        extensions: ['.ts', '.js']
+        extensions: ['.ts', '.js'],
+        alias: {
+            shared:  path.resolve(__dirname, '../shared'),
+        }
     },
     module: {
         rules: [{
